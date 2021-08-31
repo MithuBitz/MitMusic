@@ -5,53 +5,53 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.example.mitmusicplayer.databinding.FragmentNowPlayingBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [NowPlaying.newInstance] factory method to
- * create an instance of this fragment.
- */
 class NowPlaying : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    companion object {
+        lateinit var binding: FragmentNowPlayingBinding
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_now_playing, container, false)
+        binding = FragmentNowPlayingBinding.bind(view)
+        binding.root.visibility = View.INVISIBLE
+        binding.playPauseBtnNP.setOnClickListener {
+            if (PlayerActivity.isPlaying) pauseMusic() else playMusic()
+        }
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (PlayerActivity.musicService != null) {
+            binding.root.visibility = View.VISIBLE
+            Glide.with(this).load(PlayerActivity.musicListPA[PlayerActivity.songPosition].artUri)
+                .apply(RequestOptions().placeholder(R.drawable.unknown).centerCrop())
+                .into(binding.songImgNP)
+            binding.songNameNP.text = PlayerActivity.musicListPA[PlayerActivity.songPosition].title
+            if (PlayerActivity.isPlaying) binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
+            else binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_now_playing, container, false)
+    private fun playMusic() {
+        PlayerActivity.musicService!!.mediaPlayer!!.start()
+        binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
+        PlayerActivity.musicService!!.showNotification(R.drawable.pause_ic)
+        PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
+        PlayerActivity.isPlaying = true
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NowPlaying.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-                NowPlaying().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
-                    }
-                }
+    private fun pauseMusic() {
+        PlayerActivity.musicService!!.mediaPlayer!!.pause()
+        binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
+        PlayerActivity.musicService!!.showNotification(R.drawable.play_ic)
+        PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.play_ic)
+        PlayerActivity.isPlaying = false
     }
+
 }

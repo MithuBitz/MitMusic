@@ -23,6 +23,7 @@ class NotificationReceiver : BroadcastReceiver() {
         PlayerActivity.musicService!!.mediaPlayer!!.start()
         PlayerActivity.musicService!!.showNotification(R.drawable.pause_ic)
         PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
+        NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
     }
 
     private fun pauseMusic() {
@@ -30,6 +31,7 @@ class NotificationReceiver : BroadcastReceiver() {
         PlayerActivity.musicService!!.mediaPlayer!!.pause()
         PlayerActivity.musicService!!.showNotification(R.drawable.play_ic)
         PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.play_ic)
+        NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
     }
 
     private fun prevNextSong(increment : Boolean, context: Context) {
