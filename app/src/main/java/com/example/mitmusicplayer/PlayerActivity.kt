@@ -41,11 +41,6 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // For starting service
-        val intent = Intent(this, MusicService::class.java)
-        bindService(intent, this, BIND_AUTO_CREATE)
-        startService(intent)
-
         initializeLayout()
         binding.backBtnPA.setOnClickListener { finish() }
         binding.playPauseBtn.setOnClickListener {
@@ -175,19 +170,31 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         //song return from the musicadapter class
         when(intent.getStringExtra("class")) {
 
+            "NowPlaying" -> {
+                setLayout()
+                binding.tvSeekbarStart.text = formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
+                binding.tvSeekbarEnd.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
+                binding.seekbarPA.progress = musicService!!.mediaPlayer!!.currentPosition
+                binding.seekbarPA.max = musicService!!.mediaPlayer!!.duration
+            }
+
             "MusicAdapterSearch" -> {
+                startServiceforapp()
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.musicSearchList)
                 setLayout()
             }
 
             "MusicAdapter" -> {
+                startServiceforapp()
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.MusicListMA)
                 setLayout()
 
             }
             "MainActivity" -> {
+
+                startServiceforapp()
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.MusicListMA)
                 musicListPA.shuffle()
@@ -280,5 +287,12 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
                 if (min60) exitApplication()}.start()
             dialog.dismiss()
         }
+    }
+
+    private fun startServiceforapp() {
+        // For starting service
+        val intent = Intent(this, MusicService::class.java)
+        bindService(intent, this, BIND_AUTO_CREATE)
+        startService(intent)
     }
 }

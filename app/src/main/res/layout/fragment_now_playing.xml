@@ -57,6 +57,9 @@
         android:layout_toLeftOf="@+id/playPauseBtnNP"
         android:layout_toRightOf="@+id/songImgNP"
         android:layout_toStartOf="@+id/playPauseBtnNP"
-        android:layout_toEndOf="@+id/songImgNP" />
+        android:layout_toEndOf="@+id/songImgNP"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"/>
 
 </RelativeLayout>
