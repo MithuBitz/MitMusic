@@ -56,6 +56,7 @@ class NowPlaying : Fragment() {
             binding.songNameNP.text = PlayerActivity.musicListPA[PlayerActivity.songPosition].title
             if (PlayerActivity.isPlaying) binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
             else binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
+
         }
     }
 

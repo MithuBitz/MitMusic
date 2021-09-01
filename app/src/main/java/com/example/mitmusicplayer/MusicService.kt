@@ -82,6 +82,7 @@ class MusicService : Service() {
             //setting the seekbar time
             PlayerActivity.binding.seekbarPA.progress = 0
             PlayerActivity.binding.seekbarPA.max = mediaPlayer!!.duration
+            PlayerActivity.nowPlayingId = PlayerActivity.musicListPA[PlayerActivity.songPosition].id
         } catch (e: Exception) {
             return
         }
@@ -92,6 +93,7 @@ class MusicService : Service() {
         runnable = Runnable {
             PlayerActivity.binding.tvSeekbarStart.text = formatDuration(mediaPlayer!!.currentPosition.toLong())
             PlayerActivity.binding.tvSeekbarEnd.text = formatDuration(mediaPlayer!!.duration.toLong())
+            PlayerActivity.binding.seekbarPA.progress = mediaPlayer!!.currentPosition
             Handler(Looper.getMainLooper()).postDelayed(runnable, 200)
         }
         Handler(Looper.getMainLooper()).postDelayed(runnable, 0)

@@ -33,6 +33,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         var min15: Boolean = false
         var min30: Boolean = false
         var min60: Boolean = false
+        var nowPlayingId: String = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,9 +156,10 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             binding.tvSeekbarStart.text = formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
             binding.tvSeekbarEnd.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
             //setting the seekbar time
-            binding.seekbarPA.progress = 0
+            binding.seekbarPA.progress = musicService!!.mediaPlayer!!.currentPosition
             binding.seekbarPA.max = musicService!!.mediaPlayer!!.duration
             musicService!!.mediaPlayer!!.setOnCompletionListener(this)
+            nowPlayingId = musicListPA[songPosition].id
         } catch (e: Exception) {
             return
         }
@@ -176,17 +178,23 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
                 binding.tvSeekbarEnd.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
                 binding.seekbarPA.progress = musicService!!.mediaPlayer!!.currentPosition
                 binding.seekbarPA.max = musicService!!.mediaPlayer!!.duration
+                if (isPlaying) binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
+                else binding.playPauseBtn.setIconResource(R.drawable.play_ic)
             }
 
             "MusicAdapterSearch" -> {
-                startServiceforapp()
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.musicSearchList)
                 setLayout()
             }
 
             "MusicAdapter" -> {
-                startServiceforapp()
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.MusicListMA)
                 setLayout()
@@ -194,7 +202,9 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             }
             "MainActivity" -> {
 
-                startServiceforapp()
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
                 musicListPA = ArrayList()
                 musicListPA.addAll(MainActivity.MusicListMA)
                 musicListPA.shuffle()
@@ -267,7 +277,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             Toast.makeText(this, "Music will stop after 15 Minutes", Toast.LENGTH_SHORT).show()
             binding.timerBtnPA.setColorFilter(ContextCompat.getColor(this, R.color.purple_500))
             min15 = true
-            Thread{Thread.sleep(15 * 60000)
+            Thread{Thread.sleep((15 * 60000).toLong())
             if (min15) exitApplication()}.start()
             dialog.dismiss()
         }
@@ -275,7 +285,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             Toast.makeText(this, "Music will stop after 30 Minutes", Toast.LENGTH_SHORT).show()
             binding.timerBtnPA.setColorFilter(ContextCompat.getColor(this, R.color.purple_500))
             min30 = true
-            Thread{Thread.sleep(30 * 60000)
+            Thread{Thread.sleep((30 * 60000).toLong())
                 if (min30) exitApplication()}.start()
             dialog.dismiss()
         }
@@ -283,16 +293,11 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             Toast.makeText(this, "Music will stop after 60 Minutes", Toast.LENGTH_SHORT).show()
             binding.timerBtnPA.setColorFilter(ContextCompat.getColor(this, R.color.purple_500))
             min60 = true
-            Thread{Thread.sleep(60 * 60000)
+            Thread{Thread.sleep((60 * 60000).toLong())
                 if (min60) exitApplication()}.start()
             dialog.dismiss()
         }
     }
 
-    private fun startServiceforapp() {
-        // For starting service
-        val intent = Intent(this, MusicService::class.java)
-        bindService(intent, this, BIND_AUTO_CREATE)
-        startService(intent)
-    }
+
 }
