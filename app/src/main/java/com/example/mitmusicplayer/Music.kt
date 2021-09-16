@@ -7,6 +7,17 @@ import kotlin.system.exitProcess
 data class Music(val id:String, val title:String, val album:String, val artist:String, val duration:Long = 0, val path: String, val artUri: String) {
 }
 
+class Playlist {
+    lateinit var name: String
+    lateinit var playlist: ArrayList<Music>
+    lateinit var createdBy: String
+    lateinit var createdOn: String
+}
+
+class MusicPlaylist {
+    var ref: ArrayList<Playlist> = ArrayList()
+}
+
 fun formatDuration(duration: Long) : String {
     val minutes = TimeUnit.MINUTES.convert(duration, TimeUnit.MILLISECONDS)
     val seconds = (TimeUnit.SECONDS.convert(duration, TimeUnit.MILLISECONDS) - minutes * TimeUnit.SECONDS.convert(1, TimeUnit.MINUTES))
@@ -41,4 +52,15 @@ fun exitApplication() {
         PlayerActivity.musicService = null
     }
     exitProcess(1)
+}
+
+fun favouriteChecker(id: String): Int {
+    PlayerActivity.isFavourite = false
+    FavouriteActivity.favouriteSong.forEachIndexed { index, music ->
+        if (id == music.id) {
+            PlayerActivity.isFavourite = true
+            return index
+        }
+    }
+    return -1
 }

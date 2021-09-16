@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.mitmusicplayer.databinding.MusicViewBinding
 
-class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>) : RecyclerView.Adapter<MusicAdapter.Myholder>() {
+class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>, private var playlistDetails: Boolean = false) : RecyclerView.Adapter<MusicAdapter.Myholder>() {
     class Myholder(binding: MusicViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
         val title = binding.songNameMV
@@ -34,15 +34,25 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
             .apply(RequestOptions().placeholder(R.drawable.unknown).centerCrop())
             .into(holder.image)
 
-        holder.root.setOnClickListener {
-            when {
-                MainActivity.search -> sendIntent(ref = "MusicAdapterSearch" , pos = position)
-                musicList[position].id == PlayerActivity.nowPlayingId ->
-                    sendIntent(ref = "NowPlaying", pos = PlayerActivity.songPosition)
-                else -> sendIntent(ref = "MusicAdapter", pos = position)
+        when {
+            playlistDetails -> {
+                holder.root.setOnClickListener {
+                    sendIntent("PlaylistDetailAdapter", pos = position)
+                }
             }
-
+            else -> {
+                holder.root.setOnClickListener {
+                    when {
+                        MainActivity.search -> sendIntent(ref = "MusicAdapterSearch" , pos = position)
+                        musicList[position].id == PlayerActivity.nowPlayingId ->
+                            sendIntent(ref = "NowPlaying", pos = PlayerActivity.songPosition)
+                        else -> sendIntent(ref = "MusicAdapter", pos = position)
+                    }
+                }
+            }
         }
+
+
     }
 
     override fun getItemCount(): Int {

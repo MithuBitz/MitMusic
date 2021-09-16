@@ -40,13 +40,14 @@
             tools:ignore="NestedWeights" />
 
         <ImageButton
+            android:id="@+id/favBtnPA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/favorite_empty_ic"
             android:background="@android:color/transparent"
             android:layout_marginRight="5dp"
             app:tint="@android:color/holo_red_dark"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="15dp"
             android:contentDescription="@string/fav_btn"/>
 
     </LinearLayout>

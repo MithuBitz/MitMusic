@@ -18,6 +18,8 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mitmusicplayer.databinding.ActivityMainBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -45,8 +47,19 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (requestRuntimePermission())
+        if (requestRuntimePermission()) {
             intializeLayour()
+            FavouriteActivity.favouriteSong = ArrayList()
+            //Retriveing favourite data from the sharedPreferences
+            val editor = getSharedPreferences("FAVOURITES", MODE_PRIVATE)
+            val jsonString = editor.getString("FavouriteSongs", null)
+            val typeToken = object : TypeToken<ArrayList<Music>>() {}.type
+            if (jsonString != null){
+                val data: ArrayList<Music> = GsonBuilder().create().fromJson(jsonString, typeToken)
+                FavouriteActivity.favouriteSong.addAll(data)
+            }
+        }
+
 
         binding.shuffleBtn.setOnClickListener {
             val intent = Intent(this@MainActivity, PlayerActivity::class.java)
@@ -177,6 +190,15 @@ class MainActivity : AppCompatActivity() {
         if (!PlayerActivity.isPlaying && PlayerActivity.musicService != null) {
             exitApplication()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //For storeing favourites data in the shared preferences
+        val editor = getSharedPreferences("FAVOURITES", MODE_PRIVATE).edit()
+        val jsonString = GsonBuilder().create().toJson(FavouriteActivity.favouriteSong)
+        editor.putString("FavouriteSongs", jsonString)
+        editor.apply()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
