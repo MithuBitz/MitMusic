@@ -21,6 +21,7 @@ class FavouriteActivity : AppCompatActivity() {
         setTheme(R.style.coolPink)
         binding = ActivityFavouriteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        favouriteSong = checkPlaylist(favouriteSong)
         binding.backBtnFA.setOnClickListener { finish() }
         binding.favouriteRV.setHasFixedSize(true)
         binding.favouriteRV.setItemViewCacheSize(11)

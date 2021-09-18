@@ -58,6 +58,14 @@ class MainActivity : AppCompatActivity() {
                 val data: ArrayList<Music> = GsonBuilder().create().fromJson(jsonString, typeToken)
                 FavouriteActivity.favouriteSong.addAll(data)
             }
+
+            //Retriveing playlist data from the sharedPreferences
+            PlaylistsActivity.musicPlaylist = MusicPlaylist()
+            val jsonStringPlaylist = editor.getString("MusicPlaylist", null)
+            if (jsonStringPlaylist != null) {
+                val dataPlaylist: MusicPlaylist = GsonBuilder().create().fromJson(jsonStringPlaylist, MusicPlaylist::class.java)
+                PlaylistsActivity.musicPlaylist = dataPlaylist
+            }
         }
 
 
@@ -198,6 +206,11 @@ class MainActivity : AppCompatActivity() {
         val editor = getSharedPreferences("FAVOURITES", MODE_PRIVATE).edit()
         val jsonString = GsonBuilder().create().toJson(FavouriteActivity.favouriteSong)
         editor.putString("FavouriteSongs", jsonString)
+
+        //For storeing created playlist
+        val jsonStringPlaylist = GsonBuilder().create().toJson(PlaylistsActivity.musicPlaylist)
+        editor.putString("MusicPlaylist", jsonStringPlaylist)
+
         editor.apply()
     }
 

@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.mitmusicplayer.databinding.MusicViewBinding
 
-class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>, private var playlistDetails: Boolean = false) : RecyclerView.Adapter<MusicAdapter.Myholder>() {
+class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>, private val playlistDetails: Boolean = false, private val selectionActivity: Boolean = false) : RecyclerView.Adapter<MusicAdapter.Myholder>() {
     class Myholder(binding: MusicViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
         val title = binding.songNameMV
@@ -40,6 +40,14 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
                     sendIntent("PlaylistDetailAdapter", pos = position)
                 }
             }
+            selectionActivity -> {
+                holder.root.setOnClickListener {
+                    if (addSong(musicList[position]))
+                        holder.root.setBackgroundColor(ContextCompat.getColor(context, R.color.cool_pink))
+                    else
+                        holder.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                }
+            }
             else -> {
                 holder.root.setOnClickListener {
                     when {
@@ -66,11 +74,28 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
         notifyDataSetChanged()
     }
 
-    fun sendIntent(ref : String, pos: Int) {
+    private fun sendIntent(ref : String, pos: Int) {
         val intent = Intent(context, PlayerActivity::class.java)
         intent.putExtra("index", pos)
         intent.putExtra("class", ref)
         ContextCompat.startActivity(context, intent, null)
+    }
+
+    private fun addSong(song: Music): Boolean {
+        PlaylistsActivity.musicPlaylist.ref[PlaylistDetails.currentPlaylistPos].playlist.forEachIndexed { index, music ->
+            if (song.id == music.id) {
+                PlaylistsActivity.musicPlaylist.ref[PlaylistDetails.currentPlaylistPos].playlist.removeAt(index)
+                return false
+            }
+        }
+        PlaylistsActivity.musicPlaylist.ref[PlaylistDetails.currentPlaylistPos].playlist.add(song)
+        return true
+    }
+
+    fun refreshPlaylist() {
+        musicList = ArrayList()
+        musicList = PlaylistsActivity.musicPlaylist.ref[PlaylistDetails.currentPlaylistPos].playlist
+        notifyDataSetChanged()
     }
 
 }
