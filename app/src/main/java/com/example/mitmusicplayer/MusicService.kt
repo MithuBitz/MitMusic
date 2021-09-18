@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Handler
@@ -12,11 +13,12 @@ import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 
-class MusicService : Service() {
+class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
     private var myBinder = MyBinder()
     var mediaPlayer:MediaPlayer? =  null
     private lateinit var mediaSesson : MediaSessionCompat
     private lateinit var runnable: Runnable
+    lateinit var audioManager: AudioManager
 
     override fun onBind(intent: Intent?): IBinder {
         mediaSesson = MediaSessionCompat(baseContext, "Mit Music")
@@ -102,5 +104,24 @@ class MusicService : Service() {
             Handler(Looper.getMainLooper()).postDelayed(runnable, 200)
         }
         Handler(Looper.getMainLooper()).postDelayed(runnable, 0)
+    }
+
+    //if inturrept like call or msg in audio service the song will be pause until and unless the call is end or msg tone is play completely
+    override fun onAudioFocusChange(focusChange: Int) {
+        if (focusChange <= 0) {
+            //Pause music
+            PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.play_ic)
+            NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
+            showNotification(R.drawable.pause_ic)
+            PlayerActivity.isPlaying = false
+            mediaPlayer!!.pause()
+        } else {
+            //Play music
+            PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
+            NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
+            showNotification(R.drawable.pause_ic)
+            PlayerActivity.isPlaying = true
+            mediaPlayer!!.start()
+        }
     }
 }
