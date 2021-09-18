@@ -7,6 +7,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name=".ApplicationClass"
@@ -17,8 +19,15 @@
         android:roundIcon="@mipmap/my_music_app_round"
         android:supportsRtl="true"
         android:theme="@style/splash_screen">
-        <activity android:name=".SelectionActivity"
+        <activity android:name=".AboutActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".SettingsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FeedbackActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SelectionActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".PlaylistDetails"
             android:screenOrientation="portrait" />

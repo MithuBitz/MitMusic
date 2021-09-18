@@ -34,5 +34,8 @@
     <string name="add_song">Add</string>
     <string name="remove_all">Remove All</string>
     <string name="song_search">Search Song</string>
-
+    <string name="topic_feedback">Topic i.e Suggestion, Error, etc</string>
+    <string name="email_feedback">Email Address (Optional)</string>
+    <string name="send_feedback">Send</string>
+    
 </resources>
