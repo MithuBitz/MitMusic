@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         var themeIndex: Int = 0
         val currentTheme = arrayOf(R.style.coolPink, R.style.coolBlue, R.style.coolPurple, R.style.coolGreen, R.style.coolBlack)
         val currentThemeNav = arrayOf(R.style.coolPinkNav, R.style.coolBLueNav, R.style.coolPurpleNav, R.style.coolGreenNav, R.style.coolBlackNav)
+        val curentGradient = arrayOf(R.drawable.gradient_pink, R.drawable.gradient_blue, R.drawable.gradient_purple, R.drawable.gradient_green, R.drawable.gradient_black)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -222,6 +224,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_view_menu, menu)
+        //For setting the background gradient
+        findViewById<LinearLayout>(R.id.linearLayoutNav)?.setBackgroundResource(curentGradient[themeIndex])
+
         val searchView = menu?.findItem(R.id.searchView)?.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean = true  // This function is used when user press submit after typeing
