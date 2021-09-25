@@ -6,11 +6,10 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.os.Binder
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
 
 class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
@@ -31,7 +30,7 @@ class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
         }
     }
 
-    fun showNotification(playPauseBtn : Int) {
+    fun showNotification(playPauseBtn : Int, playbackSpeed: Float) {
 
         //Perform action when user click on notification
         val intent = Intent(baseContext, MainActivity::class.java)
@@ -73,6 +72,18 @@ class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
             .addAction(R.drawable.exit_ic, "Exit", exitPendingIntent)
             .build()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Set up the duration for the seekbar
+            mediaSesson.setMetadata(MediaMetadataCompat.Builder()
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaPlayer!!.duration.toLong())
+                    .build())
+            //Setup the seekbar to move
+            mediaSesson.setPlaybackState(PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_PLAYING, mediaPlayer!!.currentPosition.toLong(), playbackSpeed)
+                    .setActions(PlaybackStateCompat.ACTION_SEEK_TO)
+                    .build())
+        }
+
         startForeground(5, notification)
     }
 
@@ -83,7 +94,7 @@ class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
             PlayerActivity.musicService!!.mediaPlayer!!.setDataSource(PlayerActivity.musicListPA[PlayerActivity.songPosition].path)
             PlayerActivity.musicService!!.mediaPlayer!!.prepare()
             PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
-            PlayerActivity.musicService!!.showNotification(R.drawable.pause_ic)
+            PlayerActivity.musicService!!.showNotification(R.drawable.pause_ic, 1F)
             PlayerActivity.binding.tvSeekbarStart.text = formatDuration(mediaPlayer!!.currentPosition.toLong())
             PlayerActivity.binding.tvSeekbarEnd.text = formatDuration(mediaPlayer!!.duration.toLong())
             //setting the seekbar time
@@ -112,14 +123,14 @@ class MusicService : Service(), AudioManager.OnAudioFocusChangeListener {
             //Pause music
             PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.play_ic)
             NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.play_ic)
-            showNotification(R.drawable.pause_ic)
+            showNotification(R.drawable.pause_ic, 0F)
             PlayerActivity.isPlaying = false
             mediaPlayer!!.pause()
         } else {
             //Play music
             PlayerActivity.binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
             NowPlaying.binding.playPauseBtnNP.setIconResource(R.drawable.pause_ic)
-            showNotification(R.drawable.pause_ic)
+            showNotification(R.drawable.pause_ic, 1F)
             PlayerActivity.isPlaying = true
             mediaPlayer!!.start()
         }

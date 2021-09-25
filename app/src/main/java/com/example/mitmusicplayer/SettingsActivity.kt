@@ -33,6 +33,24 @@ class SettingsActivity : AppCompatActivity() {
         binding.coolGreenTheme.setOnClickListener { saveTheme(3) }
         binding.coolBlackTheme.setOnClickListener { saveTheme(4) }
         binding.versionName.text = setVersionName()
+        binding.sortBtn.setOnClickListener {
+            val menuList = arrayOf("Recently Added", "Song Title", "File Size")
+            var currentSort = MainActivity.sortOrder
+            val builder = MaterialAlertDialogBuilder(this)
+            builder.setTitle("Sorting")
+                    .setPositiveButton("Ok") {_, _ ->
+                        val editor = getSharedPreferences("SORTING", MODE_PRIVATE).edit()
+                        editor.putInt("sortOrder", currentSort)
+                        editor.apply()
+                    }
+            //when the user click on special selection
+                    .setSingleChoiceItems(menuList, currentSort){_, which ->
+                        currentSort = which
+                    }
+            val customDialog = builder.create()
+            customDialog.show()
+            customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
+        }
 
     }
 

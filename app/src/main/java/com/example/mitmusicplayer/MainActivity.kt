@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         val currentTheme = arrayOf(R.style.coolPink, R.style.coolBlue, R.style.coolPurple, R.style.coolGreen, R.style.coolBlack)
         val currentThemeNav = arrayOf(R.style.coolPinkNav, R.style.coolBLueNav, R.style.coolPurpleNav, R.style.coolGreenNav, R.style.coolBlackNav)
         val curentGradient = arrayOf(R.drawable.gradient_pink, R.drawable.gradient_blue, R.drawable.gradient_purple, R.drawable.gradient_green, R.drawable.gradient_black)
+        var sortOrder: Int = 0
+        val sortingList = arrayOf(MediaStore.Audio.Media.DATE_ADDED + " DESC", MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.SIZE + " DESC")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,6 +153,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun intializeLayour() {
         search = false
+        val sortEditor = getSharedPreferences("SORTING", MODE_PRIVATE)
+        sortOrder = sortEditor.getInt("sortOrder", 0)
         MusicListMA = getAllAudio()
         //To unnesesery binding for memory efficiency
         binding.musicRV.setHasFixedSize(true)
@@ -171,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATE_ADDED, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID)
 
         //Cursor to access the files
-        val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, MediaStore.Audio.Media.DATE_ADDED + " DESC", null)
+        val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, sortingList[sortOrder], null)
 
         if (cursor != null) {
             if (cursor.moveToFirst())
@@ -218,8 +222,18 @@ class MainActivity : AppCompatActivity() {
         //For storeing created playlist
         val jsonStringPlaylist = GsonBuilder().create().toJson(PlaylistsActivity.musicPlaylist)
         editor.putString("MusicPlaylist", jsonStringPlaylist)
-
         editor.apply()
+
+        //For sorting playlist
+        val sortEditor = getSharedPreferences("SORTING", MODE_PRIVATE)
+        val sortValue = sortEditor.getInt("sortOrder", 0)
+
+        if (sortOrder != sortValue) {
+            sortOrder = sortValue
+            MusicListMA = getAllAudio()
+            musicAdapter.updateSearchList(MusicListMA)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

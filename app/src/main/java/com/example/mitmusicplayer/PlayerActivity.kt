@@ -46,7 +46,20 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initializeLayout()
+//        if (intent.data?.scheme.contentEquals("content")) {
+//            val intentService = Intent(this, MusicService::class.java)
+//            bindService(intentService, this, BIND_AUTO_CREATE)
+//            startService(intentService)
+//            musicListPA = ArrayList()
+//            musicListPA.add(getMusicDetails(intent.data!!))
+//            //setup the image and title from the intent filter song
+//            Glide.with(this)
+//                    .load(getImageArt(musicListPA[songPosition].path))
+//                    .apply(RequestOptions().placeholder(R.drawable.unknown).centerCrop())
+//                    .into(binding.songImagePA)
+//            binding.songNamePA.text = musicListPA[songPosition].title
+//        } else
+            initializeLayout()
         binding.backBtnPA.setOnClickListener { finish() }
         binding.playPauseBtn.setOnClickListener {
             if (isPlaying) pauseMusic()
@@ -169,7 +182,7 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
             musicService!!.mediaPlayer!!.start()
             isPlaying = true
             binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
-            musicService!!.showNotification(R.drawable.pause_ic)
+            musicService!!.showNotification(R.drawable.pause_ic, 1F)
             //to set seekbar text
             binding.tvSeekbarStart.text = formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
             binding.tvSeekbarEnd.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
@@ -269,14 +282,14 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
 
     private fun playMusic(){
         binding.playPauseBtn.setIconResource(R.drawable.pause_ic)
-        musicService!!.showNotification(R.drawable.pause_ic)
+        musicService!!.showNotification(R.drawable.pause_ic, 1F)
         isPlaying = true
         musicService!!.mediaPlayer!!.start()
     }
 
     private fun pauseMusic(){
         binding.playPauseBtn.setIconResource(R.drawable.play_ic)
-        musicService!!.showNotification(R.drawable.pause_ic)
+        musicService!!.showNotification(R.drawable.play_ic, 0F)
         isPlaying = false
         musicService!!.mediaPlayer!!.pause()
     }
@@ -355,5 +368,26 @@ class PlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCom
         }
     }
 
+//    private fun getMusicDetails(contentUri: Uri): Music {
+//        var cursor: Cursor? = null
+//        try {
+//            val projection = arrayOf(MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DURATION)
+//            cursor = this.contentResolver.query(contentUri, projection,null, null, null)
+//            val dataColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+//            val durationColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+//            cursor!!.moveToFirst()
+//            val path = dataColumn?.let { cursor.getString(it) }
+//            val duration = durationColumn?.let { cursor.getLong(it) }!!
+//            return Music(id = "Unknown", title = path.toString(), album = "Unknown", artist = "Unknown", duration = duration, artUri = "Unknown", path = path.toString() )
+//        } finally {
+//            cursor?.close()
+//        }
+//
+//    }
+
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        if (musicListPA[songPosition].id == "Unknown" && !isPlaying) exitApplication()
+//    }
 
 }
